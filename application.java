@@ -1,0 +1,9 @@
+package com.hsbc.rbwm.digital.amh.appname;
+import org.slf4j.Logger;import org.slf4j.LoggerFactory;import org.slf4j.helpers.NOPLogger;import org.springframework.beans.factory.annotation.Value;import org.springframework.boot.SpringApplication;import org.springframework.boot.autoconfigure.SpringBootApplication;import org.springframework.context.annotation.Bean;import org.springframework.context.annotation.ComponentScan;
+import com.hsbc.rbwm.digital.amh.base.LoggingUtil;
+import feign.Retryer;
+@SpringBootApplication@ComponentScan({"com.hsbc.rbwm.digital.amh"})public class AppnameApplication {    private static final String CLASSNAME = AppnameApplication.class.getName();
+    public static void main(final String[] args) {        SpringApplication.run(AppnameApplication.class, args);    }
+    @Bean    public Logger apiLogger(@Value("${api_logging}") final String logApi) {        final String METHODNAME = "customerLogger";        LoggingUtil.logEntry(AppnameApplication.CLASSNAME, METHODNAME, logApi);        Logger logger = null;        if ("true".equalsIgnoreCase(logApi)) {            logger = LoggerFactory.getLogger("com.hsbc.rbwm.digital.amh.appname.api");            // logger = Logger.getLogger();        } else {            logger = NOPLogger.NOP_LOGGER;        }        LoggingUtil.logExit(AppnameApplication.CLASSNAME, METHODNAME, logger);        return logger;    }
+    @Bean    public String newLine(@Value("${newLine}") final String newLine) {        final String METHODNAME = "loadStackTrace";        LoggingUtil.logEntry(AppnameApplication.CLASSNAME, METHODNAME, newLine);        String result = null;        if (newLine != null && !newLine.isEmpty()) {            result = newLine;            LoggingUtil.setReplaceNewLine(newLine);        }        LoggingUtil.logExit(AppnameApplication.CLASSNAME, METHODNAME, newLine);        return result;    }
+    @Bean    public Retryer feignRetryer() {        return Retryer.NEVER_RETRY;    }}
